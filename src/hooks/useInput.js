@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+// Управляемый компонент
 export default function useInput(initialValue) {
   const [value, setValue] = useState(initialValue);
 
