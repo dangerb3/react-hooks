@@ -2,27 +2,38 @@ import "./App.css";
 import List from "./components/List";
 import { useState } from "react";
 import useDebounce from "./hooks/useDebounce";
+import useRequest from "./hooks/useRequest";
+import axios from "axios";
 
 function App() {
-  const [value, setValue] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
+  const [todos, loading, error] = useRequest(fetchTodos);
 
-  function search(query) {
-    fetch(`https://jsonplaceholder.typicode.com/todos?query=` + query)
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-      });
+  function fetchTodos() {
+    return axios.get(`https://jsonplaceholder.typicode.com/todos`);
   }
 
-  const onChange = (e) => {
-    setValue(e.target.value);
-    debouncedSearch(e.target.value);
-  };
+  if (loading) {
+    return <h1>Идет загрузка...</h1>;
+  }
+
+  if (error !== null) {
+    return <h1>Произошла ошибка при загрузке данных</h1>;
+  }
 
   return (
     <div>
-      <input type="text" value={value} onChange={onChange}></input>
+      {todos &&
+        todos.map((todo) => (
+          <div
+            key={todo.id}
+            style={{
+              padding: 30,
+              border: "2px solid black",
+            }}
+          >
+            {todo.id}. {todo.title}
+          </div>
+        ))}
     </div>
   );
 }
